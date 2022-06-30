@@ -1,16 +1,14 @@
 package com.yoonbin.triple.club.mileage.point.domain;
 
-import com.yoonbin.triple.club.mileage.review.domain.Review;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -23,9 +21,8 @@ public class Point {
     @GeneratedValue
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name="reviewId")
-    private Review reviewId;
+    @Column
+    private String reviewId;
 
     @Column(nullable = false)
     private Integer amount;

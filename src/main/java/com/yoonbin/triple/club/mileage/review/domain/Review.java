@@ -11,18 +11,22 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(indexes = {@Index(name = "idxContent", columnList = "content"),
+        @Index(name = "idxPhoto", columnList = "attachedPhotoIds"),
+        @Index(name = "idxPlaceId", columnList = "placeId")})
 public class Review {
     @Id
     @Column
     private String reviewId;
 
-    @Column(nullable = false)
+    @Column
     private String content;
 
     @Column
