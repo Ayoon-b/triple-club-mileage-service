@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Review {
     @Id
     @Column
-    private UUID reviewId;
+    private String reviewId;
 
     @Column(nullable = false)
     private String content;
@@ -30,10 +30,10 @@ public class Review {
     private List<String> attachedPhotoIds;
 
     @Column(nullable = false)
-    private UUID userId;
+    private String userId;
 
     @Column(nullable = false)
-    private UUID placeId;
+    private String placeId;
 
     @Column
     @CreatedDate
@@ -43,4 +43,10 @@ public class Review {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (reviewId == null) {
+            reviewId = UUID.randomUUID().toString();
+        }
+    }
 }

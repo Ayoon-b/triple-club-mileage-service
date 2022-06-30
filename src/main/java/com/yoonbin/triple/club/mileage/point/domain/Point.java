@@ -20,7 +20,8 @@ import java.util.UUID;
 public class Point {
     @Id
     @Column
-    private int id;
+    @GeneratedValue
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name="reviewId")
@@ -33,10 +34,10 @@ public class Point {
     private String remarks;
 
     @Column(nullable = false)
-    private UUID userId;
+    private String userId;
 
     @Column(nullable = false)
-    private UUID placeId;
+    private String placeId;
 
     @Column
     @CreatedDate
