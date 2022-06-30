@@ -17,3 +17,4 @@ public class ListToStringConverter implements AttributeConverter<List, String> {
         return Arrays.asList(s.split(","));
     }
 }
+
