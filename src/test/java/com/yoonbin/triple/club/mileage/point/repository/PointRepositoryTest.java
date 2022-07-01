@@ -24,7 +24,7 @@ class PointRepositoryTest {
         Point point = Point.builder()
                 .amount(1)
                 .remarks("리뷰 작성")
-                .reviewId(reviewRepository.findById("3dc9946f-1ccd-48ac-b1fa-15d36e19048e").get())
+                .reviewId("3dc9946f-1ccd-48ac-b1fa-15d36e19048e")
                 .placeId("5044507f-d303-4d41-bec8-b4ebce6d8da3")
                 .userId("42ab933f-2f37-4131-a784-8e4f889418c9")
                 .build();
