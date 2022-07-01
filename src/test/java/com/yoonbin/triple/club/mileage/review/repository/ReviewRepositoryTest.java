@@ -19,16 +19,35 @@ class ReviewRepositoryTest {
     @Test
     void saveTest() throws Throwable{
 
-        Review review = Review.builder()
-                .content("사장님이 친절하고 음식이 맛있어요.")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("5044507f-d303-4d41-bec8-b4ebce6d8da3")
-                .userId("42ab933f-2f37-4131-a784-8e4f889418c9")
+        Review review1 = Review.builder()
+                .content("최고의 장소 ! 추천합니다.")
+                .attachedPhotoIds(List.of(new String[]{}))
+                .placeId("61560b36-59e1-450a-8d36-362b59ef71d6")
+                .userId("9f98f5b3-998a-4b45-bc38-2b6151426172")
                 .build();
 
-        review = reviewRepository.save(review);
-        assertNotNull(review.getReviewId());
+        Review review2 = Review.builder()
+                .content("")
+                .attachedPhotoIds(List.of(new String[]{"image1.jpg"}))
+                .placeId("61560b36-59e1-450a-8d36-362b59ef71d6")
+                .userId("8f98f5b3-998a-4b45-bc38-2b6151426173")
+                .build();
+
+        Review review3 = Review.builder()
+                .content("추천")
+                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
+                        "image2.png"}))
+                .placeId("test")
+                .userId("test")
+                .build();
+
+        review1 = reviewRepository.save(review1);
+        review2 = reviewRepository.save(review2);
+        review3 = reviewRepository.save(review3);
+
+        assertNotNull(review1.getReviewId());
+        assertNotNull(review2.getReviewId());
+        assertNotNull(review3.getReviewId());
 
     }
 }
