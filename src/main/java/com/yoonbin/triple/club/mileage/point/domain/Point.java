@@ -21,7 +21,7 @@ public class Point {
     @GeneratedValue
     private Integer id;
 
-    @Column
+    @Column(nullable = false)
     private String reviewId;
 
     @Column(nullable = false)

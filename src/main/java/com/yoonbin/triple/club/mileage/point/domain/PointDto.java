@@ -1,4 +1,4 @@
-package com.yoonbin.triple.club.mileage.review.domain;
+package com.yoonbin.triple.club.mileage.point.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @Builder
-public class ReviewDto {
+public class PointDto {
     private String type;
     private String action;
     @JsonProperty("review_id")
