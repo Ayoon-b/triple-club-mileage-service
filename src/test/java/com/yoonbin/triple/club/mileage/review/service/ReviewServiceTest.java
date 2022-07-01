@@ -1,12 +1,12 @@
 package com.yoonbin.triple.club.mileage.review.service;
 
+import com.yoonbin.triple.club.mileage.point.domain.Point;
+import com.yoonbin.triple.club.mileage.point.repository.PointRepository;
 import com.yoonbin.triple.club.mileage.review.domain.Review;
-import com.yoonbin.triple.club.mileage.review.domain.ReviewDto;
 import com.yoonbin.triple.club.mileage.review.repository.ReviewRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.LinkedList;
@@ -22,6 +22,8 @@ class ReviewServiceTest {
     ReviewService reviewService;
     @Autowired
     ReviewRepository reviewRepository;
+    @Autowired
+    PointRepository pointRepository;
 
     @Test
     void getReviewsByPlaceIdTest() {
@@ -173,13 +175,106 @@ class ReviewServiceTest {
 
     @Test
     void insertReviewTest() {
-        ReviewDto reviewDto = reviewService.insertReview(Review.builder()
+        Review review = reviewService.insertReview(Review.builder()
                 .content("insertReviewTest")
                 .attachedPhotoIds(List.of(new String[]{"image1.jpg",
                         "image2.png", "image3.jpg"}))
                 .placeId("0c1a7704-ceb3-4fef-90c5-2277dffc6cc2")
                 .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
                 .build());
-        assertNotNull(reviewDto.getReviewId());
+        assertNotNull(review.getReviewId());
+    }
+
+    @Test
+    void updateReviewTest() {
+        Review review = Review.builder()
+                .content("updateReviewTest")
+                .attachedPhotoIds(List.of(new String[]{}))
+                .placeId("5e9370cd-c16c-4a6a-94dc-1e7b1fb3574a")
+                .userId("489e70fd-17f1-4297-a1f4-41f2aca8af08")
+                .build();
+
+        reviewRepository.save(review);
+
+        review = reviewService.updateReview(review.getReviewId(), review);
+        assertThat(review.getContent()).isEqualTo(reviewRepository.findById(review.getReviewId()).get().getContent());
+    }
+
+    @Test
+    void deleteReviewTest() {
+        Review review = Review.builder()
+                .content("deleteReviewTest")
+                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
+                        "image2.png", "image3.jpg"}))
+                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
+                .userId("b0a6d120-16ad-4a15-8dda-e5b12df6e2f7")
+                .build();
+
+        reviewRepository.save(review);
+
+        Point point = Point.builder()
+                .reviewId(review.getReviewId())
+                .remarks("deleteReviewTest")
+                .amount(2)
+                .placeId(review.getPlaceId())
+                .userId(review.getUserId())
+                .build();
+
+        pointRepository.save(point);
+
+        reviewService.deleteReview(review.getReviewId());
+        assertThat(reviewRepository.findById(review.getReviewId())).isEmpty();
+    }
+
+    @Test
+    void saveReviewTest(){
+        Review review = Review.builder()
+                .content("saveReviewTest")
+                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
+                        "image2.png", "image3.jpg"}))
+                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
+                .userId("b0a6d120-16ad-4a15-8dda-e5b12df6e2f7")
+                .build();
+        review = reviewService.saveReview(review);
+
+        assertThat(reviewRepository.findById(review.getReviewId())).isNotNull();
+    }
+
+    @Test
+    void getReviewByReviewIdTest() {
+        Review review = Review.builder()
+                .content("getReviewByReviewIdTest")
+                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
+                        "image2.png", "image3.jpg"}))
+                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
+                .userId("b0a6d120-16ad-4a15-8dda-e5b12df6e2f7")
+                .build();
+
+        review = reviewService.saveReview(review);
+
+        assertThat(reviewService.getReviewByReviewId(review.getReviewId()).getReviewId()).isEqualTo(review.getReviewId());
+    }
+
+    @Test
+    void updateAmountTest() {
+        Review review = Review.builder()
+                .content("updateAmountTest")
+                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
+                        "image2.png", "image3.jpg"}))
+                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
+                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
+                .build();
+        reviewService.saveReview(review);
+
+        int amount = reviewService.updateAmount(Review.builder()
+                .reviewId(review.getReviewId())
+                .content("updateAmountTest")
+                .attachedPhotoIds(List.of(new String[]{}))
+                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
+                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
+                .build()).getKey();
+
+        assertThat(amount).isEqualTo(-1);
     }
 }
+
