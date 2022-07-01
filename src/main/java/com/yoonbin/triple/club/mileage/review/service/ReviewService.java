@@ -32,51 +32,31 @@ public class ReviewService {
         return reviewRepository.findByUserId(userId);
     }
 
-    public Map.Entry<Integer, String> checkPhoto(Review review){
-        int amount = 0;
-        String remarks ="";
-
-        if(!review.getAttachedPhotoIds().get(0).isEmpty()){
-            amount++;
-            if(remarks.isEmpty()){
-                remarks+="1장 이상 사진 첨부";
-            }else {
-                remarks+=", 1장 이상 사진 첨부";
-            }
-        }
-        AbstractMap.Entry<Integer, String> checkPhoto =new AbstractMap.SimpleEntry<>(amount , remarks);
-        return checkPhoto;
-    }
-
-    public Map.Entry<Integer, String> checkContent(Review review){
-        int amount = 0;
-        String remarks ="";
+    public boolean checkContent(Review review){
+        boolean checkContent = false;
 
         if(review.getContent().length() > 0) {
-            amount++;
-            if (remarks.isEmpty()) {
-                remarks += "1자 이상 텍스트 작성";
-            } else {
-                remarks += "1자 이상 텍스트 작성";
-            }
+            checkContent = true;
         }
-        AbstractMap.Entry<Integer, String> checkContent =new AbstractMap.SimpleEntry<>(amount , remarks);
         return checkContent;
     }
 
-    public Map.Entry<Integer, String> checkPlace(Review review){
-        int amount = 0;
-        String remarks ="";
+    public boolean checkPhoto(Review review){
+        boolean checkPhoto = false;
+
+        if(!review.getAttachedPhotoIds().get(0).isEmpty()){
+            checkPhoto = true;
+        }
+        return checkPhoto;
+    }
+
+    public boolean checkPlace(Review review){
+        boolean checkPlace = false;
 
         if(getReviewsByPlaceId(review.getPlaceId()).isEmpty()){
-            amount++;
-            if(remarks.isEmpty()){
-                remarks+="특정 장소에 첫 리뷰 작성";
-            }else {
-                remarks+=", 특정 장소에 첫 리뷰 작성";
-            }
+            checkPlace = true;
         }
-        AbstractMap.Entry<Integer, String> checkPlace =new AbstractMap.SimpleEntry<>(amount , remarks);
+
         return checkPlace;
     }
 
@@ -84,12 +64,29 @@ public class ReviewService {
         int amount = 0;
         String remarks ="";
 
-        amount += (checkContent(review).getKey() + checkPhoto(review).getKey());
-        remarks += (checkContent(review).getValue() + checkPhoto(review).getKey());
+        if (checkContent(review)) {
+            amount++;
+            if(remarks.isEmpty()){
+                remarks += "1자 이상 텍스트 작성";
+            } else {
+                remarks += "1자 이상 텍스트 작성";
+            }
+        }
+
+        if(checkPhoto(review)){
+            amount++;
+            if(remarks.isEmpty()){
+                remarks+="1장 이상 사진 첨부";
+            } else {
+                remarks+=", 1장 이상 사진 첨부";
+            }
+        }
 
         if(amount > 0){
-            amount += checkPlace(review).getKey();
-            remarks += checkPlace(review).getValue();
+            if (checkPlace(review)){
+                amount++;
+                remarks+=", 특정 장소에 첫 리뷰 작성";
+            }
         }
 
         AbstractMap.Entry<Integer, String> checkAmount =new AbstractMap.SimpleEntry<>(amount , remarks);
