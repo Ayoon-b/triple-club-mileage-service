@@ -1,280 +1,158 @@
 package com.yoonbin.triple.club.mileage.review.service;
 
-import com.yoonbin.triple.club.mileage.point.domain.Point;
 import com.yoonbin.triple.club.mileage.point.repository.PointRepository;
+import com.yoonbin.triple.club.mileage.point.service.PointService;
 import com.yoonbin.triple.club.mileage.review.domain.Review;
 import com.yoonbin.triple.club.mileage.review.repository.ReviewRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.LinkedList;
+import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 class ReviewServiceTest {
     @Autowired
     ReviewService reviewService;
+
     @Autowired
     ReviewRepository reviewRepository;
+
     @Autowired
     PointRepository pointRepository;
 
-    @Test
-    void getReviewsByPlaceIdTest() {
-        List<Review> reviews = new LinkedList<>();
-        Review review = reviewRepository.save(Review.builder()
-                .content("getReviewsByPlaceIdTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("1641ac95-da05-4e76-aecd-8b524d5e408f")
-                .userId("42ab933f-2f37-4131-a784-8e4f889418c9")
-                .build());
+    @Autowired
+    PointService pointService;
 
-        reviews.add(review);
-
-        for (Review r : reviews) {
-            assertThat(r.getPlaceId()).isEqualTo("1641ac95-da05-4e76-aecd-8b524d5e408f");
-        }
-    }
-
-    @Test
-    void getReviewsByUserIdTest() {
-        List<Review> reviews = new LinkedList<>();
-        Review review = reviewRepository.save(Review.builder()
-                .content("getReviewsByUserIdTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("1641ac95-da05-4e76-aecd-8b524d5e408f")
-                .userId("73d193ed-5158-499b-9bd3-d5763e57bb42")
-                .build());
-
-        reviews.add(review);
-
-        for (Review r : reviews) {
-            assertThat(r.getUserId()).isEqualTo("73d193ed-5158-499b-9bd3-d5763e57bb42");
-        }
-    }
-    @Test
-    void getUserIdsByPlaceIdTest() {
-        List<Review> reviews = new LinkedList<>();
-        Review review = reviewRepository.save(Review.builder()
-                .content("getUserIdsByPlaceIdTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("405ac2ad-b54e-4207-8f58-1ccba3848ead")
-                .userId("73d193ed-5158-499b-9bd3-d5763e57bb42")
-                .build());
-
-        reviews.add(review);
-
-        List<String> userIds = reviewService.getUserIdsByPlaceId("405ac2ad-b54e-4207-8f58-1ccba3848ead");
-
-        for (String userId : userIds) {
-            for (Review r : reviewService.getReviewsByUserId(userId)){
-                assertThat(r.getPlaceId()).isEqualTo("405ac2ad-b54e-4207-8f58-1ccba3848ead");
-            }
-        }
-    }
-
-    @Test
-    void checkPhotoTest() {
-        Review review = Review.builder()
-                .content("checkPhotoTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("65553057-d3de-4c34-9b19-6ffff381c47f")
-                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
+    private Review review() {
+        return Review.builder()
+                .reviewId(UUID.randomUUID().toString())
+                .attachedPhotoIds(List.of(UUID.randomUUID().toString()))
+                .placeId(UUID.randomUUID().toString())
+                .content(UUID.randomUUID().toString())
+                .userId(UUID.randomUUID().toString())
                 .build();
-
-        if(review.getAttachedPhotoIds().isEmpty()){
-            assertThat(reviewService.checkPhoto(review)).isFalse();
-        }else{
-            assertThat(reviewService.checkPhoto(review)).isTrue();
-        }
     }
 
-    @Test
-    void checkContentTest() {
-        Review review = reviewRepository.save(Review.builder()
-                .content("checkContentTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("6044507f-d303-4d41-bec8-b4ebce6d8da3")
-                .userId("42ab933f-2f37-4131-a784-8e4f889418c9")
-                .build());
-
-        if(review.getContent().isEmpty()){
-            assertThat(reviewService.checkContent(review)).isFalse();
-        }else{
-            assertThat(reviewService.checkContent(review)).isTrue();
-        }
-    }
     @Test
     void visitedCheckTest() {
-        Review review = reviewRepository.save(Review.builder()
-                .content("사장님이 친절하고 음식이 맛있어요.")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("4443a517-2147-4f42-9ec7-96281035d6af")
-                .userId("42ab933f-2f37-4131-a784-8e4f889418c9")
-                .build());
-
-        boolean ck = reviewService.visitedCheck(review);
-        if(reviewService.getUserIdsByPlaceId(review.getPlaceId()).isEmpty()){
-            assertThat(ck).isFalse();
-        }else{
-            assertThat(ck).isTrue();
-        }
+        Review review = reviewRepository.save(review());
+        Assertions.assertThat(reviewService.visitedCheck(review)).isTrue();
     }
 
     @Test
-    void checkPlaceTest() {
-        Review review = Review.builder()
-                .content("checkPlaceTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("69da8289-6d34-45f5-9525-2b7539bf4eb0")
-                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
-                .build();
-
-        if(reviewService.visitedCheck(review)){
-            assertThat(reviewService.checkPlace(review)).isFalse();
-        }else{
-            assertThat(reviewService.checkPlace(review)).isTrue();
-        }
-    }
-
-    @Test
-    void checkAmountTest() {
-        int amount = 0;
-        Review review = Review.builder()
-                .content("checkAmountTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
-                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
-                .build();
-
-        if (reviewService.checkPhoto(review)) amount++;
-        if (reviewService.checkContent(review)) amount++;
-        if(amount > 0){ if (reviewService.checkPlace(review)) amount++;}
-
-        assertThat(reviewService.checkAmount(review).getKey()).isEqualTo(amount);
-    }
-
-    @Test
-    void getReviewsTest() {
-        assertThat(reviewService.getReviews()).isNotNull();
+    void isFirstReviewTest() {
+        Review review = reviewRepository.save(review());
+        Assertions.assertThat(reviewService.isFirstReview(review.getPlaceId())).isFalse();
     }
 
     @Test
     void insertReviewTest() {
-        Review review = reviewService.insertReview(Review.builder()
-                .content("insertReviewTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("0c1a7704-ceb3-4fef-90c5-2277dffc6cc2")
-                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
-                .build());
-        assertNotNull(review.getReviewId());
+        Review review = review();
+        review.setContent("");
+        review.setAttachedPhotoIds(Collections.emptyList());
+
+        Assertions.assertThatThrownBy(() -> reviewService.insertReview(review))
+                .isInstanceOf(IllegalStateException.class);
+
+        Review review2 = review();
+        reviewService.insertReview(review2);
+        Assertions.assertThat(reviewRepository.findById(review2.getReviewId())
+                        .map(Review::getReviewId).orElse(null))
+                        .isEqualTo(review2.getReviewId());
+        Assertions.assertThat(pointRepository.findByReviewId(review2.getReviewId())).isNotEmpty();
+        Assertions.assertThat(pointService.sumOfPointByReview(review2)).isEqualTo(3);
+
+        Review review3 = review();
+        review3.setContent("");
+        reviewService.insertReview(review3);
+        Assertions.assertThat(reviewRepository.findById(review3.getReviewId())
+                        .map(Review::getReviewId).orElse(null))
+                .isEqualTo(review3.getReviewId());
+        Assertions.assertThat(pointRepository.findByReviewId(review3.getReviewId())).isNotEmpty();
+        Assertions.assertThat(pointService.sumOfPointByReview(review3)).isEqualTo(2);
+
+        Review review4 = review();
+        review4.setPlaceId(review2.getPlaceId());
+        reviewService.insertReview(review4);
+        Assertions.assertThat(reviewRepository.findById(review4.getReviewId())
+                        .map(Review::getReviewId).orElse(null))
+                .isEqualTo(review4.getReviewId());
+        Assertions.assertThat(pointRepository.findByReviewId(review4.getReviewId())).isNotEmpty();
+        Assertions.assertThat(pointService.sumOfPointByReview(review4)).isEqualTo(2);
+
+        Review review5 = review();
+        review5.setPlaceId(review3.getPlaceId());
+        review5.setContent("");
+        reviewService.insertReview(review5);
+        Assertions.assertThat(reviewRepository.findById(review5.getReviewId())
+                        .map(Review::getReviewId).orElse(null))
+                .isEqualTo(review5.getReviewId());
+        Assertions.assertThat(pointRepository.findByReviewId(review5.getReviewId())).isNotEmpty();
+        Assertions.assertThat(pointService.sumOfPointByReview(review5)).isEqualTo(1);
     }
 
     @Test
     void updateReviewTest() {
-        Review review = Review.builder()
-                .content("updateReviewTest")
-                .attachedPhotoIds(List.of(new String[]{}))
-                .placeId("5e9370cd-c16c-4a6a-94dc-1e7b1fb3574a")
-                .userId("489e70fd-17f1-4297-a1f4-41f2aca8af08")
+        Review review = review();
+        reviewService.insertReview(review);
+        Assertions.assertThat(pointService.sumOfPointByReview(review)).isEqualTo(3);
+
+        Review review2 = Review.builder()
+                .reviewId(review.getReviewId())
+                .placeId(review.getPlaceId())
+                .userId(review.getUserId())
+                .content("not empty")
+                .attachedPhotoIds(Collections.emptyList())
                 .build();
+        reviewService.updateReview(review2);
+        Assertions.assertThat(pointService.sumOfPointByReview(review2)).isEqualTo(2);
 
-        reviewRepository.save(review);
+        Review review3 = Review.builder()
+                .reviewId(review.getReviewId())
+                .placeId(review.getPlaceId())
+                .userId(review.getUserId())
+                .content("")
+                .attachedPhotoIds(Collections.emptyList())
+                .build();
+        Assertions.assertThatThrownBy(() -> reviewService.updateReview(review3))
+                .isInstanceOf(IllegalStateException.class);
 
-        review = reviewService.updateReview(review.getReviewId(), review);
-        assertThat(review.getContent()).isEqualTo(reviewRepository.findById(review.getReviewId()).get().getContent());
+        Review review4 = Review.builder()
+                .reviewId(review.getReviewId())
+                .placeId(review.getPlaceId())
+                .userId(review.getUserId())
+                .content("")
+                .attachedPhotoIds(List.of("image"))
+                .build();
+        reviewService.updateReview(review4);
+        Assertions.assertThat(pointService.sumOfPointByReview(review4)).isEqualTo(2);
+
+        Review review5 = Review.builder()
+                .reviewId(review.getReviewId())
+                .placeId(review.getPlaceId())
+                .userId(review.getUserId())
+                .content("not empty")
+                .attachedPhotoIds(List.of("image"))
+                .build();
+        reviewService.updateReview(review5);
+        Assertions.assertThat(pointService.sumOfPointByReview(review5)).isEqualTo(3);
+
     }
 
     @Test
     void deleteReviewTest() {
-        Review review = Review.builder()
-                .content("deleteReviewTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
-                .userId("b0a6d120-16ad-4a15-8dda-e5b12df6e2f7")
-                .build();
-
-        reviewRepository.save(review);
-
-        Point point = Point.builder()
-                .reviewId(review.getReviewId())
-                .remarks("deleteReviewTest")
-                .amount(2)
-                .placeId(review.getPlaceId())
-                .userId(review.getUserId())
-                .build();
-
-        pointRepository.save(point);
-
-        reviewService.deleteReview(review.getReviewId());
-        assertThat(reviewRepository.findById(review.getReviewId())).isEmpty();
-    }
-
-    @Test
-    void saveReviewTest(){
-        Review review = Review.builder()
-                .content("saveReviewTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
-                .userId("b0a6d120-16ad-4a15-8dda-e5b12df6e2f7")
-                .build();
-        review = reviewService.saveReview(review);
-
-        assertThat(reviewRepository.findById(review.getReviewId())).isNotNull();
-    }
-
-    @Test
-    void getReviewByReviewIdTest() {
-        Review review = Review.builder()
-                .content("getReviewByReviewIdTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
-                .userId("b0a6d120-16ad-4a15-8dda-e5b12df6e2f7")
-                .build();
-
-        review = reviewService.saveReview(review);
-
-        assertThat(reviewService.getReviewByReviewId(review.getReviewId()).getReviewId()).isEqualTo(review.getReviewId());
-    }
-
-    @Test
-    void updateAmountTest() {
-        Review review = Review.builder()
-                .content("updateAmountTest")
-                .attachedPhotoIds(List.of(new String[]{"image1.jpg",
-                        "image2.png", "image3.jpg"}))
-                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
-                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
-                .build();
-        reviewService.saveReview(review);
-
-        int amount = reviewService.updateAmount(Review.builder()
-                .reviewId(review.getReviewId())
-                .content("updateAmountTest")
-                .attachedPhotoIds(List.of(new String[]{}))
-                .placeId("64772458-8504-5ac8-9315-37b2c720c7e9")
-                .userId("b0e96d95-1c85-416d-bc35-8b3017dd5a65")
-                .build()).getKey();
-
-        assertThat(amount).isEqualTo(-1);
+        Review review = review();
+        reviewService.insertReview(review);
+        Assertions.assertThat(pointService.sumOfPointByReview(review)).isEqualTo(3);
+        reviewService.deleteReview(review);
+        Assertions.assertThat(pointService.sumOfPointByReview(review)).isEqualTo(0);
     }
 }
-
