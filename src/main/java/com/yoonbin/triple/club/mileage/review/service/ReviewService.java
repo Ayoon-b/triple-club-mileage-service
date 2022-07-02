@@ -5,24 +5,21 @@ import com.yoonbin.triple.club.mileage.point.service.PointService;
 import com.yoonbin.triple.club.mileage.review.domain.Review;
 import com.yoonbin.triple.club.mileage.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.AbstractMap;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final PointService pointService;
+    private PointService pointService;
 
-    public List<Review> getReviews(){
-        return reviewRepository.findAll();
-    }
-
-    public Review saveReview(Review review){
-        return reviewRepository.save(review);
+    @Autowired
+    public void setPointService(@Lazy PointService pointService) {
+        this.pointService = pointService;
     }
 
     public boolean visitedCheck(Review review){

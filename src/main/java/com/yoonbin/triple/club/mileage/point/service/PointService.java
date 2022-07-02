@@ -5,6 +5,7 @@ import com.yoonbin.triple.club.mileage.point.repository.PointRepository;
 import com.yoonbin.triple.club.mileage.review.domain.Review;
 import com.yoonbin.triple.club.mileage.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,7 +17,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PointService {
     private final PointRepository pointRepository;
-    private final ReviewService reviewService;
+    private ReviewService reviewService;
+
+    @Autowired
+    public void setReviewService(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
 
     private Point getPoint(Review review, Map.Entry<Integer, String> amount) {
         return Point.builder()
