@@ -1,6 +1,5 @@
 package com.yoonbin.triple.club.mileage.review.service;
 
-import com.yoonbin.triple.club.mileage.point.domain.Point;
 import com.yoonbin.triple.club.mileage.point.service.PointService;
 import com.yoonbin.triple.club.mileage.review.domain.Review;
 import com.yoonbin.triple.club.mileage.review.repository.ReviewRepository;
@@ -45,8 +44,8 @@ public class ReviewService {
         if (!hasContent(review) && !hasPhoto(review)) {
             throw new IllegalStateException("텍스트와 사진이 작성되지 않아 리뷰로 등록되지 않습니다.");
         }
-        reviewRepository.save(review);
         pointService.insert(review);
+        reviewRepository.save(review);
         return review;
     }
 
@@ -56,11 +55,10 @@ public class ReviewService {
         Review preReview = reviewRepository.findById(review.getReviewId())
                 .orElseThrow(() -> new IllegalStateException("해당 리뷰가 존재하지 않습니다."));
 
-        if(!review.getContent().isEmpty()){ preReview.setContent(review.getContent()); }
-        if(!review.getAttachedPhotoIds().isEmpty()){ preReview.setAttachedPhotoIds(review.getAttachedPhotoIds()); }
+        review.setCreatedAt(preReview.getCreatedAt());
 
-        reviewRepository.save(preReview);
         pointService.update(preReview, review);
+        reviewRepository.save(review);
         return review;
     }
 
