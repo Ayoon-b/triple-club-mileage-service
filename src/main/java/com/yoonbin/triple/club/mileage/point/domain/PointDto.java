@@ -1,15 +1,15 @@
 package com.yoonbin.triple.club.mileage.point.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
 @AllArgsConstructor
 @Builder
+@Data
 public class PointDto {
     private String type;
     private String action;

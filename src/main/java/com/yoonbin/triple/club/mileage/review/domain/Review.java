@@ -1,6 +1,9 @@
 package com.yoonbin.triple.club.mileage.review.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,16 +14,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(indexes = {@Index(name = "idxContent", columnList = "content"),
-        @Index(name = "idxPhoto", columnList = "attachedPhotoIds"),
-        @Index(name = "idxPlaceId", columnList = "placeId")})
+@Table(indexes = {
+        @Index(name = "idxPlaceId", columnList = "placeId"),
+        @Index(name = "idxPlaceIdAndUserId", columnList = "placeId,userId")
+        })
 public class Review {
     @Id
     @Column
