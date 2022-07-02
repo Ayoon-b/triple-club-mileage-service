@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface PointRepository extends JpaRepository<Point, Integer> {
     List<Point> findByReviewId(String reviewId);
-    List<Point> findByPlaceId(String placeId);
 }
 
