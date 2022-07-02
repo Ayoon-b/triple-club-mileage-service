@@ -4,6 +4,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Converter
 public class ListToStringConverter implements AttributeConverter<List, String> {
@@ -13,8 +14,8 @@ public class ListToStringConverter implements AttributeConverter<List, String> {
     }
 
     @Override
-    public List<String> convertToEntityAttribute(String s) {
-        return Arrays.asList(s.split(","));
+    public List<String> convertToEntityAttribute(String str) {
+        return Arrays.stream(str.split(",")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
     }
 }
 
