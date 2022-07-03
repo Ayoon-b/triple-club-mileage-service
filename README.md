@@ -167,7 +167,7 @@ java -jar triple-club-mileage-0.0.1-SNAPSHOT.jar
 <br>
 
 
-### action : MOD, 텍스트 삭제
+### action : MOD, 리뷰 텍스트 삭제
 
 - Request body
 ```json
@@ -203,7 +203,7 @@ java -jar triple-club-mileage-0.0.1-SNAPSHOT.jar
 <br>
 
 
-### action : DELETE, 텍스트 삭제
+### action : DELETE
 
 - Request body
 ```json
